@@ -5,6 +5,14 @@
  */
 package hrmapp;
 
+import hrmapp.dao.Connector;
+import hrmapp.dto.Job;
+import hrmapp.helper.JTableHelper;
+import java.sql.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author dangm
@@ -16,6 +24,20 @@ public class JobsPanel extends javax.swing.JPanel {
      */
     public JobsPanel() {
         initComponents();
+        fetchJobsTable();
+    }
+
+    private void fetchJobsTable() {
+        Connector connector = new Connector();
+        Connection connection = connector.getConnection();
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM Jobs");
+            jobsTable.setModel(JTableHelper.buildTableModel(resultSet, false));
+            connection.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(JobsPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -28,29 +50,54 @@ public class JobsPanel extends javax.swing.JPanel {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jobsTable = new javax.swing.JTable();
 
-        jLabel1.setText("Con ngọc thằng thắng");
+        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(51, 153, 255));
+        jLabel1.setText("Danh sách công việc");
+
+        jobsTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+
+            }
+        ));
+        jobsTable.setColumnSelectionAllowed(true);
+        jobsTable.getTableHeader().setReorderingAllowed(false);
+        jScrollPane2.setViewportView(jobsTable);
+        jobsTable.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(72, 72, 72)
-                .addComponent(jLabel1)
-                .addContainerGap(221, Short.MAX_VALUE))
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 474, Short.MAX_VALUE))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(97, 97, 97)
+                .addContainerGap()
                 .addComponent(jLabel1)
-                .addContainerGap(189, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 302, Short.MAX_VALUE)
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JTable jobsTable;
     // End of variables declaration//GEN-END:variables
 }
