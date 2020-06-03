@@ -5,6 +5,14 @@
  */
 package hrmapp;
 
+import hrmapp.dao.Connector;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author dangm
@@ -16,7 +24,7 @@ public class App extends javax.swing.JFrame {
      */
     public App() {
         initComponents();
-        setSize(800,600);
+        setSize(800, 600);
         EmployeesPanel employeesPanel = new EmployeesPanel();
         DepartmentsPanel departmentsPanel = new DepartmentsPanel();
         JobsPanel jobsPanel = new JobsPanel();
@@ -24,7 +32,7 @@ public class App extends javax.swing.JFrame {
         tabbedPane.addTab("Danh  sách phòng ban", departmentsPanel);
         tabbedPane.addTab("Danh  sách công việc", jobsPanel);
     }
- 
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
