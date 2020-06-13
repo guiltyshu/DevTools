@@ -24,3 +24,6 @@ hs_err_pid*
 
 !libs/*
 !libs/**
+
+HRMApp/nbproject/private/*
+HRMApp/nbproject/private/**
