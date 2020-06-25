@@ -5,11 +5,8 @@
  */
 package hrmapp.dto;
 
-/**
- *
- * @author dangm
- */
 public class Job {
+
     private int id;
     private String title;
     private double minSalary;
@@ -56,7 +53,4 @@ public class Job {
     public void setMaxSalary(double maxSalary) {
         this.maxSalary = maxSalary;
     }
-    
-    
-    
 }
