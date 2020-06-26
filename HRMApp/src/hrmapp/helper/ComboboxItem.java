@@ -30,4 +30,9 @@ public class ComboboxItem {
     public String toString() {
         return label;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        return this.getValue().equals(((ComboboxItem)obj).getValue());
+    }
 }
