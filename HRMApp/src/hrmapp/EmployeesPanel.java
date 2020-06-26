@@ -7,104 +7,68 @@ package hrmapp;
 
 import hrmapp.dao.Connector;
 import hrmapp.helper.JTableHelper;
+import java.awt.HeadlessException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.table.TableModel;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import javax.swing.JOptionPane;
+import hrmapp.helper.ComboboxItem;
+import javax.swing.JComboBox;
 
 /**
  *
  * @author dangm
  */
-public class EmployeesPanel extends javax.swing.JPanel {
+public final class EmployeesPanel extends javax.swing.JPanel {
 
     public EmployeesPanel() {
         initComponents();
         fetchEmployeesTable();
-        addDataToJobComboBox();
-        addDataToDepartmentComboBox();
+        showJobs(cbbJob);
+        showDepartments(cbbDepartment);
         setLock(true);
     }
-
-    public int addDataToJobComboBox() {
-        Connector connector = new Connector();
-        Connection connection = connector.getConnection();
-        try {
-            int jobId = 0;
-            Statement statement = connection.createStatement();
-            ResultSet jobsResultSet = statement.executeQuery("SELECT * FROM Jobs");
-            HashMap<Integer, Integer> IDHolder = new HashMap<>();
-            int a = 0;
-            while (jobsResultSet.next()) {
-                String titleJobs = jobsResultSet.getString("Title");
-                cbbJob.addItem(titleJobs);
-                IDHolder.put(a, jobsResultSet.getInt(1));
-                a++;
-            }
-            jobId = IDHolder.get(cbbJob.getSelectedIndex());
-            return jobId;
-        } catch (SQLException ex) {
-            Logger.getLogger(JobsPanel.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return 0;
-    }
-
-    public int addDataToDepartmentComboBox() {
-        Connector connector = new Connector();
-        Connection connection = connector.getConnection();
-        try {
-            int departmentId;
-            Statement statement = connection.createStatement();
-            ResultSet departmentsResultSet = statement.executeQuery("SELECT * FROM Departments");
-            HashMap<Integer, Integer> IDHolder = new HashMap<>();
-            int a = 0;
-            while (departmentsResultSet.next()) {
-                String nameDepartments = departmentsResultSet.getString("Name");
-                cbbDepartment.addItem(nameDepartments);
-                IDHolder.put(a, departmentsResultSet.getInt(1));
-                a++;
-            }
-            departmentId = IDHolder.get(cbbDepartment.getSelectedIndex());
-            return departmentId;
-        } catch (SQLException ex) {
-            Logger.getLogger(JobsPanel.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return 0;
-    }
     
-    public ResultSet showJobsNameToCombobox() {
-        int id = addDataToJobComboBox();
-        Connector connector = new Connector();
-        Connection connection = connector.getConnection();
+    public void showJobs(JComboBox<ComboboxItem> comboJobs) {
+        ResultSet resultSet = null;
         try {
-        Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery("SELECT Title FROM Jobs where id = '" + id + "' ");
-        return resultSet;
+            Connector connector = new Connector();
+            Connection connection = connector.getConnection();
+            String sql = "SELECT Id, Title FROM Jobs";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                comboJobs.addItem(new ComboboxItem(resultSet.getString("Id"), resultSet.getString("Title")));
+            }
+            resultSet.close();
         } catch (SQLException e) {
-             e.printStackTrace();
+            System.err.println("Error showing jobs " + e.getMessage());
         }
-        return null;
     }
 
-    
-    public ResultSet showDepartmentNameToCombobox() {
-    int id = addDataToJobComboBox();
-        Connector connector = new Connector();
-        Connection connection = connector.getConnection();
+    public void showDepartments(JComboBox<ComboboxItem> comboDepartments) {
+        ResultSet resultSet = null;
         try {
-        Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery("SELECT Name FROM Department where id = '" + id + "' ");
-        return resultSet;
+            Connector connector = new Connector();
+            Connection connection = connector.getConnection();
+            String sql = "SELECT Id, Name FROM Departments";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                comboDepartments.addItem(new ComboboxItem(resultSet.getString("Id"), resultSet.getString("Name")));
+            }
+            resultSet.close();
         } catch (SQLException e) {
-             e.printStackTrace();
+            System.err.println("Error showing departments " + e.getMessage());
         }
-        return null;
     }
+
     private void fetchEmployeesTable() {
         Connector connector = new Connector();
         Connection connection = connector.getConnection();
@@ -129,7 +93,7 @@ public class EmployeesPanel extends javax.swing.JPanel {
         this.txtSalary.setEnabled(!a);
         this.txtPhoneNumber.setEnabled(!a);
     }
-    
+
     private void setNull(boolean a) {
         txtFirstName.setText("");
         txtLastName.setText("");
@@ -167,11 +131,9 @@ public class EmployeesPanel extends javax.swing.JPanel {
         txtPhoneNumber = new javax.swing.JTextField();
         cbbDepartment = new javax.swing.JComboBox<>();
         cbbJob = new javax.swing.JComboBox<>();
+        jLabel11 = new javax.swing.JLabel();
         txtEmail = new javax.swing.JTextField();
         txtManagerId = new javax.swing.JTextField();
-        txtId = new javax.swing.JTextField();
-        jLabel12 = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         btnInsert = new javax.swing.JButton();
@@ -224,91 +186,79 @@ public class EmployeesPanel extends javax.swing.JPanel {
         cbbJob.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         cbbJob.setToolTipText("");
 
+        jLabel11.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jLabel11.setText("Email");
+
         txtEmail.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
         txtManagerId.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-
-        txtId.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-
-        jLabel12.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jLabel12.setText("Id");
-
-        jLabel10.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jLabel10.setText("Phone Number");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(12, 12, 12)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel7)
                     .addComponent(jLabel2)
-                    .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel7))
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtFirstName, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 245, Short.MAX_VALUE)
-                    .addComponent(cbbDepartment, javax.swing.GroupLayout.Alignment.TRAILING, 0, 245, Short.MAX_VALUE)
-                    .addComponent(cbbJob, javax.swing.GroupLayout.Alignment.TRAILING, 0, 245, Short.MAX_VALUE)
-                    .addComponent(txtLastName, javax.swing.GroupLayout.DEFAULT_SIZE, 245, Short.MAX_VALUE)
-                    .addComponent(txtId))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(txtEmail, javax.swing.GroupLayout.DEFAULT_SIZE, 244, Short.MAX_VALUE)
+                    .addComponent(txtLastName, javax.swing.GroupLayout.DEFAULT_SIZE, 244, Short.MAX_VALUE)
+                    .addComponent(txtFirstName, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 244, Short.MAX_VALUE)
+                    .addComponent(cbbDepartment, javax.swing.GroupLayout.Alignment.TRAILING, 0, 244, Short.MAX_VALUE)
+                    .addComponent(cbbJob, javax.swing.GroupLayout.Alignment.TRAILING, 0, 244, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jLabel10)
-                        .addGap(26, 26, 26)
-                        .addComponent(txtEmail, javax.swing.GroupLayout.DEFAULT_SIZE, 245, Short.MAX_VALUE))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel4)
-                            .addComponent(jLabel5)
-                            .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(26, 26, 26)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtSalary, javax.swing.GroupLayout.DEFAULT_SIZE, 245, Short.MAX_VALUE)
-                            .addComponent(txtHireDate, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 245, Short.MAX_VALUE)
-                            .addComponent(txtPhoneNumber, javax.swing.GroupLayout.DEFAULT_SIZE, 245, Short.MAX_VALUE)
-                            .addComponent(txtManagerId, javax.swing.GroupLayout.DEFAULT_SIZE, 245, Short.MAX_VALUE))))
+                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel5)
+                    .addComponent(jLabel4)
+                    .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtSalary, javax.swing.GroupLayout.DEFAULT_SIZE, 244, Short.MAX_VALUE)
+                    .addComponent(txtHireDate, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 244, Short.MAX_VALUE)
+                    .addComponent(txtPhoneNumber)
+                    .addComponent(txtManagerId))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(32, 32, 32)
+                .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtLastName, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3)
                     .addComponent(jLabel8)
-                    .addComponent(txtManagerId, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtId, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel12))
+                    .addComponent(txtManagerId, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtFirstName, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2)
                     .addComponent(jLabel6)
-                    .addComponent(txtHireDate, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtLastName, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtHireDate, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtSalary, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel5)
                     .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtFirstName, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(cbbJob, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel4)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(cbbDepartment, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel7)
+                        .addComponent(txtPhoneNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel7)
-                    .addComponent(txtPhoneNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(cbbJob, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel4))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(cbbDepartment, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3)
-                    .addComponent(jLabel10)
-                    .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
+                    .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel11))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jLabel9.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
@@ -327,6 +277,11 @@ public class EmployeesPanel extends javax.swing.JPanel {
 
         btnDelete.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         btnDelete.setText("Delete");
+        btnDelete.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnDeleteMouseClicked(evt);
+            }
+        });
 
         btnRefresh.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         btnRefresh.setText("Refresh");
@@ -338,6 +293,11 @@ public class EmployeesPanel extends javax.swing.JPanel {
 
         btnEdit.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         btnEdit.setText("Edit");
+        btnEdit.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnEditMouseClicked(evt);
+            }
+        });
 
         employeesTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -413,11 +373,11 @@ public class EmployeesPanel extends javax.swing.JPanel {
                         .addComponent(btnOK, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(btnCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 17, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 
-        jPanel1Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {btnCancel, btnDelete, btnEdit, btnInsert, btnOK, btnRefresh});
+        jPanel1Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {btnCancel, btnDelete, btnEdit, btnInsert, btnRefresh});
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -457,15 +417,21 @@ public class EmployeesPanel extends javax.swing.JPanel {
 
     private void btnOKMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnOKMouseClicked
         // TODO add your handling code here:
+        int jobId = cbbJob.getSelectedIndex()+1;
+        int departmentId = cbbDepartment.getSelectedIndex()+1;
         String lastName = txtLastName.getText();
         String firtName = txtFirstName.getText();
-        int jobId = addDataToJobComboBox();
-        int departmentId = addDataToDepartmentComboBox();
         String email = txtEmail.getText();
         String managerId = txtManagerId.getText();
         String hireDate = txtHireDate.getText();
         double salary = Double.parseDouble(txtSalary.getText());
         String phoneNumber = txtPhoneNumber.getText();
+        String regexEmail = "^[A-Za-z0-9+_.-]+@(.+)$";
+        String regexPhoneNumber = "^(0|\\+84)(\\s)?((3[2-9])|(5[689])|(7[06-9])|(8[1-689])|(9[0-46-9]))(\\d)(\\s)?(\\d{3})(\\s)?(\\d{3})$";
+        Pattern patternEmail = Pattern.compile(regexEmail);
+        Pattern patternPhoneNumber = Pattern.compile(regexPhoneNumber);
+        Matcher matcherEmail = patternEmail.matcher(email);
+        Matcher matcherPhoneNumber = patternPhoneNumber.matcher(phoneNumber);
         Connector connector = new Connector();
         Connection connection = connector.getConnection();
         try {
@@ -478,10 +444,18 @@ public class EmployeesPanel extends javax.swing.JPanel {
                 preparedStatement.setInt(2, Integer.parseInt(managerId));
             }
             preparedStatement.setInt(3, departmentId);
-            preparedStatement.setString(4, email);
+            if (matcherEmail.matches() == false) {
+                JOptionPane.showMessageDialog(null, "Wrong email. Please enter the correct email!", "Warning", 1);
+            } else {
+                preparedStatement.setString(4, email);
+            }
             preparedStatement.setString(5, firtName);
             preparedStatement.setString(6, lastName);
-            preparedStatement.setString(7, phoneNumber);
+            if (matcherPhoneNumber.matches() == false) {
+                JOptionPane.showMessageDialog(null, "Wrong phone number. Please enter the correct phone number!", "Warning", 1);
+            } else {
+                preparedStatement.setString(7, phoneNumber);
+            }
             preparedStatement.setDouble(8, salary);
             preparedStatement.setString(9, hireDate);
             preparedStatement.execute();
@@ -503,22 +477,69 @@ public class EmployeesPanel extends javax.swing.JPanel {
     private void employeesTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_employeesTableMouseClicked
         // TODO add your handling code here:
         int row = employeesTable.getSelectedRow();
-        
-        txtLastName.setText(employeesTable.getValueAt(row, 7).toString());
-        txtFirstName.setText(employeesTable.getValueAt(row, 6).toString());
-        txtEmail.setText(employeesTable.getValueAt(row, 5).toString());
-        txtHireDate.setText(employeesTable.getValueAt(row, 10).toString());
-        txtSalary.setText(employeesTable.getValueAt(row, 9).toString());
-        txtPhoneNumber.setText(employeesTable.getValueAt(row, 8).toString());
-        txtManagerId.setText(employeesTable.getValueAt(row, 3).toString());
-        cbbJob.setSelectedItem(showJobsNameToCombobox());
-        cbbDepartment.setSelectedItem(showDepartmentNameToCombobox());
+
+        txtLastName.setText(employeesTable.getValueAt(row, 6).toString());
+        txtFirstName.setText(employeesTable.getValueAt(row, 5).toString());
+        txtEmail.setText(employeesTable.getValueAt(row, 4).toString());
+        txtHireDate.setText(employeesTable.getValueAt(row, 9).toString());
+        txtSalary.setText(employeesTable.getValueAt(row, 8).toString());
+        txtPhoneNumber.setText(employeesTable.getValueAt(row, 7).toString());
+        txtManagerId.setText(employeesTable.getValueAt(row, 2).toString());
+        int jobId = (int) employeesTable.getValueAt(row, 1);
+        int departmentId = (int) employeesTable.getValueAt(row, 3);
+        if (jobId == cbbJob.getSelectedIndex()) {
+            cbbJob.setSelectedItem(cbbJob.getSelectedIndex());
+        }
+        if (departmentId == cbbDepartment.getSelectedIndex()) {
+            cbbJob.setSelectedItem(cbbDepartment.getSelectedIndex());
+        }
     }//GEN-LAST:event_employeesTableMouseClicked
 
     private void btnRefreshMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnRefreshMouseClicked
         // TODO add your handling code here:
         fetchEmployeesTable();
     }//GEN-LAST:event_btnRefreshMouseClicked
+
+    private void btnDeleteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnDeleteMouseClicked
+        // TODO add your handling code here:
+        int row = employeesTable.getSelectedRow();
+        int id = (int) employeesTable.getValueAt(row, 0);
+        try {
+            if (id == 0) {
+                JOptionPane.showMessageDialog(null, "Please choose employee you want to delete!", "Attention", 1);
+            } else {
+                if (JOptionPane.showConfirmDialog(null, "Do you want to delete?", "Attention", 2) == 0) {
+                    Connector connector = new Connector();
+                    Connection connection = connector.getConnection();
+                    Statement statement;
+                    try {
+                        statement = connection.createStatement();
+                        statement.executeUpdate("DELETE FROM Employees where id = '" + id + "'");
+                        connection.close();
+                    } catch (SQLException ex) {
+                        Logger.getLogger(EmployeesPanel.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    fetchEmployeesTable();
+                    setNull(true);
+                }
+            }
+        } catch (HeadlessException e) {
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_btnDeleteMouseClicked
+
+    private void btnEditMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnEditMouseClicked
+        // TODO add your handling code here:
+        int row = employeesTable.getSelectedRow();
+        int id = (int) employeesTable.getValueAt(row, 0);
+        if (id == 0) {
+            JOptionPane.showMessageDialog(null, "Please choose employee you want to edit!", "Attention", 1);
+        } else {
+            setLock(false);
+            btnOK.setEnabled(true);
+            btnCancel.setEnabled(true);
+        }
+    }//GEN-LAST:event_btnEditMouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -528,12 +549,11 @@ public class EmployeesPanel extends javax.swing.JPanel {
     private javax.swing.JButton btnInsert;
     private javax.swing.JButton btnOK;
     private javax.swing.JButton btnRefresh;
-    private javax.swing.JComboBox<String> cbbDepartment;
-    private javax.swing.JComboBox<String> cbbJob;
+    private javax.swing.JComboBox<ComboboxItem> cbbDepartment;
+    private javax.swing.JComboBox<ComboboxItem> cbbJob;
     private javax.swing.JTable employeesTable;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -548,7 +568,6 @@ public class EmployeesPanel extends javax.swing.JPanel {
     private javax.swing.JTextField txtEmail;
     private javax.swing.JTextField txtFirstName;
     private javax.swing.JTextField txtHireDate;
-    private javax.swing.JTextField txtId;
     private javax.swing.JTextField txtLastName;
     private javax.swing.JTextField txtManagerId;
     private javax.swing.JTextField txtPhoneNumber;
