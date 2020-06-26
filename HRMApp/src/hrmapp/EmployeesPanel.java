@@ -6,15 +6,22 @@
 package hrmapp;
 
 import hrmapp.dao.Connector;
+import hrmapp.helper.ExcelHelper;
 import hrmapp.helper.JTableHelper;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.TableModel;
 
 /**
@@ -76,35 +83,35 @@ public class EmployeesPanel extends javax.swing.JPanel {
         }
         return 0;
     }
-    
+
     public ResultSet showJobsNameToCombobox() {
         int id = addDataToJobComboBox();
         Connector connector = new Connector();
         Connection connection = connector.getConnection();
         try {
-        Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery("SELECT Title FROM Jobs where id = '" + id + "' ");
-        return resultSet;
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT Title FROM Jobs where id = '" + id + "' ");
+            return resultSet;
         } catch (SQLException e) {
-             e.printStackTrace();
+            e.printStackTrace();
         }
         return null;
     }
 
-    
     public ResultSet showDepartmentNameToCombobox() {
-    int id = addDataToJobComboBox();
+        int id = addDataToJobComboBox();
         Connector connector = new Connector();
         Connection connection = connector.getConnection();
         try {
-        Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery("SELECT Name FROM Department where id = '" + id + "' ");
-        return resultSet;
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT Name FROM Department where id = '" + id + "' ");
+            return resultSet;
         } catch (SQLException e) {
-             e.printStackTrace();
+            e.printStackTrace();
         }
         return null;
     }
+
     private void fetchEmployeesTable() {
         Connector connector = new Connector();
         Connection connection = connector.getConnection();
@@ -129,7 +136,7 @@ public class EmployeesPanel extends javax.swing.JPanel {
         this.txtSalary.setEnabled(!a);
         this.txtPhoneNumber.setEnabled(!a);
     }
-    
+
     private void setNull(boolean a) {
         txtFirstName.setText("");
         txtLastName.setText("");
@@ -182,6 +189,7 @@ public class EmployeesPanel extends javax.swing.JPanel {
         employeesTable = new javax.swing.JTable();
         btnOK = new javax.swing.JButton();
         btnCancel = new javax.swing.JButton();
+        btnExport = new javax.swing.JButton();
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Input"));
 
@@ -375,13 +383,21 @@ public class EmployeesPanel extends javax.swing.JPanel {
             }
         });
 
+        btnExport.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        btnExport.setText("Export");
+        btnExport.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnExportActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane2)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 611, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnOK, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -389,11 +405,12 @@ public class EmployeesPanel extends javax.swing.JPanel {
                     .addComponent(btnInsert, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnDelete, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnEdit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnExport, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
-        jPanel1Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {btnCancel, btnDelete, btnEdit, btnInsert, btnOK, btnRefresh});
+        jPanel1Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {btnCancel, btnDelete, btnEdit, btnExport, btnInsert, btnOK, btnRefresh});
 
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -413,11 +430,12 @@ public class EmployeesPanel extends javax.swing.JPanel {
                         .addComponent(btnOK, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(btnCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 17, Short.MAX_VALUE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 56, Short.MAX_VALUE)
+                        .addComponent(btnExport, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
 
-        jPanel1Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {btnCancel, btnDelete, btnEdit, btnInsert, btnOK, btnRefresh});
+        jPanel1Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {btnCancel, btnDelete, btnEdit, btnExport, btnInsert, btnOK, btnRefresh});
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -503,7 +521,7 @@ public class EmployeesPanel extends javax.swing.JPanel {
     private void employeesTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_employeesTableMouseClicked
         // TODO add your handling code here:
         int row = employeesTable.getSelectedRow();
-        
+
         txtLastName.setText(employeesTable.getValueAt(row, 7).toString());
         txtFirstName.setText(employeesTable.getValueAt(row, 6).toString());
         txtEmail.setText(employeesTable.getValueAt(row, 5).toString());
@@ -520,11 +538,54 @@ public class EmployeesPanel extends javax.swing.JPanel {
         fetchEmployeesTable();
     }//GEN-LAST:event_btnRefreshMouseClicked
 
+    private void btnExportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExportActionPerformed
+        JFileChooser chooser = new JFileChooser();
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        chooser.setFileFilter(new FileNameExtensionFilter("Excel file", "xlsx"));
+        int response = chooser.showOpenDialog(this);
+        if (response == JFileChooser.APPROVE_OPTION) {
+            String path = chooser.getSelectedFile().toString();
+            Connector connector = new Connector();
+            Connection connection = connector.getConnection();
+            try {
+                String sql = "SELECT [Employees].[Id] , [Jobs].[Title] AS [Job Title],[Departments].[Name] AS [Department Name], "
+                        + "[FirstName], [LastName], [PhoneNumber], [Salary], [HireDate], [ManagerId] "
+                        + "FROM [dbo].[Employees] "
+                        + "JOIN [dbo].[Jobs] ON [Employees].[JobId] = [Jobs].[Id] "
+                        + "JOIN [Departments] ON [Employees].[DepartmentId] = [Departments].[Id]";
+                PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+                ResultSet resultSet = preparedStatement.executeQuery();
+                ResultSetMetaData metaData = resultSet.getMetaData();
+
+                Vector<String> columnNames = new Vector<String>();
+                int columnCount = metaData.getColumnCount();
+                for (int column = 1; column <= columnCount; column++) {
+                    columnNames.add(metaData.getColumnName(column));
+                }
+                Vector<Vector<String>> data = new Vector<Vector<String>>();
+                while (resultSet.next()) {
+                    Vector<String> vector = new Vector<String>();
+                    for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
+                        vector.add(resultSet.getString(columnIndex));
+                    }
+                    data.add(vector);
+                }
+                ExcelHelper.export(columnNames, data, path+"\\report.xlsx");
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } catch (IOException ex) {
+                Logger.getLogger(EmployeesPanel.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_btnExportActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCancel;
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnEdit;
+    private javax.swing.JButton btnExport;
     private javax.swing.JButton btnInsert;
     private javax.swing.JButton btnOK;
     private javax.swing.JButton btnRefresh;
