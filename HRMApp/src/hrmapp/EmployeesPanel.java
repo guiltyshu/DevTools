@@ -6,7 +6,6 @@
 package hrmapp;
 
 import hrmapp.dao.Connector;
-import hrmapp.dto.Job;
 import hrmapp.helper.ExcelHelper;
 import hrmapp.helper.JTableHelper;
 import java.io.IOException;
@@ -32,8 +31,6 @@ import java.util.regex.Pattern;
 import javax.swing.JOptionPane;
 import hrmapp.helper.ComboboxItem;
 import javax.swing.JComboBox;
-import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
-import static javax.swing.JOptionPane.WARNING_MESSAGE;
 
 /**
  *
@@ -48,7 +45,7 @@ public final class EmployeesPanel extends javax.swing.JPanel {
         showDepartments(cbbDepartment);
         setLock(true);
     }
-
+    
     public void showJobs(JComboBox<ComboboxItem> comboJobs) {
         ResultSet resultSet = null;
         try {
@@ -88,12 +85,7 @@ public final class EmployeesPanel extends javax.swing.JPanel {
         Connection connection = connector.getConnection();
         try {
             Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery("SELECT [Employees].[Id] , [LastName], [FirstName], [Jobs].[Title] AS [Job Title], "
-                    + "[Departments].[Name] AS [Department Name], "
-                    + "[ManagerId] , [HireDate], [Salary], [PhoneNumber], [Email]"
-                    + "FROM [dbo].[Employees] "
-                    + "JOIN [dbo].[Jobs] ON [Employees].[JobId] = [Jobs].[Id] "
-                    + "JOIN [Departments] ON [Employees].[DepartmentId] = [Departments].[Id]");
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM Employees");
             employeesTable.setModel(JTableHelper.buildTableModel(resultSet, false));
             connection.close();
         } catch (SQLException ex) {
@@ -114,7 +106,6 @@ public final class EmployeesPanel extends javax.swing.JPanel {
     }
 
     private void setNull(boolean a) {
-        txtEmployeeId.setText("");
         txtFirstName.setText("");
         txtLastName.setText("");
         cbbJob.setSelectedIndex(0);
@@ -155,7 +146,7 @@ public final class EmployeesPanel extends javax.swing.JPanel {
         txtEmail = new javax.swing.JTextField();
         txtManagerId = new javax.swing.JTextField();
         jLabel12 = new javax.swing.JLabel();
-        txtEmployeeId = new javax.swing.JTextField();
+        txtId = new javax.swing.JTextField();
         jLabel9 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         btnInsert = new javax.swing.JButton();
@@ -217,27 +208,35 @@ public final class EmployeesPanel extends javax.swing.JPanel {
         txtManagerId.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
         jLabel12.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jLabel12.setText("ID");
+        jLabel12.setText("Id");
 
-        txtEmployeeId.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        txtEmployeeId.setEnabled(false);
+        txtId.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel7)
-                    .addComponent(jLabel2))
-                .addGap(18, 18, 18)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(12, 12, 12)
+                        .addComponent(jLabel2))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabel7)))
+                .addGap(16, 16, 16)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(cbbDepartment, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(txtEmployeeId)
+                    .addComponent(txtId)
                     .addComponent(txtLastName, javax.swing.GroupLayout.DEFAULT_SIZE, 237, Short.MAX_VALUE)
                     .addComponent(txtFirstName, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 237, Short.MAX_VALUE)
                     .addComponent(cbbJob, javax.swing.GroupLayout.Alignment.TRAILING, 0, 237, Short.MAX_VALUE))
@@ -276,7 +275,7 @@ public final class EmployeesPanel extends javax.swing.JPanel {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel8)
                     .addComponent(txtManagerId, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtEmployeeId, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtId, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel12))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -306,7 +305,7 @@ public final class EmployeesPanel extends javax.swing.JPanel {
                 .addContainerGap())
         );
 
-        jPanel2Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {cbbDepartment, cbbJob, txtEmail, txtEmployeeId, txtFirstName, txtHireDate, txtLastName, txtManagerId, txtPhoneNumber, txtSalary});
+        jPanel2Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {cbbDepartment, cbbJob, txtEmail, txtFirstName, txtHireDate, txtId, txtLastName, txtManagerId, txtPhoneNumber, txtSalary});
 
         jLabel9.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
         jLabel9.setForeground(new java.awt.Color(51, 153, 255));
@@ -340,7 +339,6 @@ public final class EmployeesPanel extends javax.swing.JPanel {
 
         btnEdit.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         btnEdit.setText("Edit");
-        btnEdit.setEnabled(false);
         btnEdit.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 btnEditMouseClicked(evt);
@@ -468,7 +466,6 @@ public final class EmployeesPanel extends javax.swing.JPanel {
     private void btnInsertMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnInsertMouseClicked
         // TODO add your handling code here:
         setLock(false);
-        btnEdit.setEnabled(true);
         btnOK.setEnabled(true);
         btnCancel.setEnabled(true);
         btnInsert.setEnabled(false);
@@ -476,10 +473,10 @@ public final class EmployeesPanel extends javax.swing.JPanel {
 
     private void btnOKMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnOKMouseClicked
         // TODO add your handling code here:
-        int jobId = cbbJob.getSelectedIndex() + 1;
-        int departmentId = cbbDepartment.getSelectedIndex() + 1;
+        int jobId = cbbJob.getSelectedIndex()+1;
+        int departmentId = cbbDepartment.getSelectedIndex()+1;
         String lastName = txtLastName.getText();
-        String firstName = txtFirstName.getText();
+        String firtName = txtFirstName.getText();
         String email = txtEmail.getText();
         String managerId = txtManagerId.getText();
         String hireDate = txtHireDate.getText();
@@ -496,61 +493,31 @@ public final class EmployeesPanel extends javax.swing.JPanel {
         try {
             String sql = "INSERT INTO [dbo].[Employees] ([JobId], [ManagerId], [DepartmentId], [Email], [FirstName], [LastName], [PhoneNumber], [Salary], [HireDate]) VALUES (?,?,?,?,?,?,?,?,?)";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            if (txtLastName.getText().length() == 0 || txtFirstName.getText().length() == 0 || txtEmail.getText().length() == 0
-                    || txtHireDate.getText().length() == 0 || txtSalary.getText().length() == 0 || txtPhoneNumber.getText().length() == 0) {
-                JOptionPane.showMessageDialog(null, "Employee information can't be blank!", "Warning", WARNING_MESSAGE);
+            preparedStatement.setInt(1, jobId);
+            if (managerId.length() == 0) {
+                preparedStatement.setNull(2, java.sql.Types.INTEGER);
             } else {
-                preparedStatement.setInt(1, jobId);
-                if (managerId.length() == 0) {
-                    preparedStatement.setNull(2, java.sql.Types.INTEGER);
-                } else {
-                    preparedStatement.setInt(2, Integer.parseInt(managerId));
-                }
-                preparedStatement.setInt(3, departmentId);
-                if (matcherEmail.matches() == false) {
-                    JOptionPane.showMessageDialog(null, "Wrong email. Please enter the correct email!", "Warning", WARNING_MESSAGE);
-                } else {
-                    preparedStatement.setString(4, email);
-                }
-                if (firstName.length() > 256) {
-                    JOptionPane.showMessageDialog(null, "Maximum charater is 256. Please enter the correct first name!", "Warning", WARNING_MESSAGE);
-                } else {
-                    preparedStatement.setString(5, firstName);
-                }
-                if (lastName.length() > 256) {
-                    JOptionPane.showMessageDialog(null, "Maximum charater is 256. Please enter the correct last name!", "Warning", WARNING_MESSAGE);
-                } else {
-                    preparedStatement.setString(6, lastName);
-                }
-                if (matcherPhoneNumber.matches() == false) {
-                    JOptionPane.showMessageDialog(null, "Wrong phone number. Please enter the correct phone number!", "Warning", WARNING_MESSAGE);
-                } else {
-                    preparedStatement.setString(7, phoneNumber);
-                }
-                try {
-                    ResultSet resultSet = null;
-                    String sqlSalary = "SELECT MinSalary, MaxSalary FROM Jobs where [Jobs].[Id] = ? ";
-
-                    PreparedStatement psSlary = connection.prepareStatement(sqlSalary);
-                    resultSet = psSlary.executeQuery();
-                    while (resultSet.next()) {
-                        double minSalary = resultSet.getDouble("MinSalary");
-                        double maxSalary = resultSet.getDouble("MaxSalary");
-                        if (salary <= maxSalary && minSalary <= salary) {
-                            preparedStatement.setDouble(8, salary);
-                        } else {
-                            JOptionPane.showMessageDialog(null, "Wrong salary. Please enter the correct salary between " + minSalary + "and " + maxSalary + "!", "Warning", WARNING_MESSAGE);
-                        }
-                    }
-                } catch (SQLException e) {
-                    Logger.getLogger(e.getSQLState());
-                }
-                preparedStatement.setString(9, hireDate);
-                preparedStatement.execute();
-                setNull(true);
+                preparedStatement.setInt(2, Integer.parseInt(managerId));
             }
+            preparedStatement.setInt(3, departmentId);
+            if (matcherEmail.matches() == false) {
+                JOptionPane.showMessageDialog(null, "Wrong email. Please enter the correct email!", "Warning", 1);
+            } else {
+                preparedStatement.setString(4, email);
+            }
+            preparedStatement.setString(5, firtName);
+            preparedStatement.setString(6, lastName);
+            if (matcherPhoneNumber.matches() == false) {
+                JOptionPane.showMessageDialog(null, "Wrong phone number. Please enter the correct phone number!", "Warning", 1);
+            } else {
+                preparedStatement.setString(7, phoneNumber);
+            }
+            preparedStatement.setDouble(8, salary);
+            preparedStatement.setString(9, hireDate);
+            preparedStatement.execute();
+            setNull(true);
         } catch (SQLException e) {
-            Logger.getLogger(e.getSQLState());
+            e.printStackTrace();
         }
     }//GEN-LAST:event_btnOKMouseClicked
 
@@ -567,28 +534,21 @@ public final class EmployeesPanel extends javax.swing.JPanel {
         // TODO add your handling code here:
         int row = employeesTable.getSelectedRow();
 
-        txtEmployeeId.setText(employeesTable.getValueAt(row, 0).toString());
-        txtLastName.setText(employeesTable.getValueAt(row, 1).toString());
-        txtFirstName.setText(employeesTable.getValueAt(row, 2).toString());
-        String jobTitle = employeesTable.getValueAt(row, 3).toString();
-        String departmentName = employeesTable.getValueAt(row, 4).toString();
-        for (int i = 0; i < cbbJob.getItemCount(); i++) {
-            if (cbbJob.getItemAt(i).toString().equalsIgnoreCase(jobTitle)) {
-                cbbJob.setSelectedIndex(i);
-            }
+        txtLastName.setText(employeesTable.getValueAt(row, 6).toString());
+        txtFirstName.setText(employeesTable.getValueAt(row, 5).toString());
+        txtEmail.setText(employeesTable.getValueAt(row, 4).toString());
+        txtHireDate.setText(employeesTable.getValueAt(row, 9).toString());
+        txtSalary.setText(employeesTable.getValueAt(row, 8).toString());
+        txtPhoneNumber.setText(employeesTable.getValueAt(row, 7).toString());
+        txtManagerId.setText(employeesTable.getValueAt(row, 2).toString());
+        int jobId = (int) employeesTable.getValueAt(row, 1);
+        int departmentId = (int) employeesTable.getValueAt(row, 3);
+        if (jobId == cbbJob.getSelectedIndex()) {
+            cbbJob.setSelectedItem(cbbJob.getSelectedIndex());
         }
-        for (int i = 0; i < cbbDepartment.getItemCount(); i++) {
-            if (cbbDepartment.getItemAt(i).toString().equalsIgnoreCase(departmentName)) {
-                cbbDepartment.setSelectedIndex(i);
-            }
+        if (departmentId == cbbDepartment.getSelectedIndex()) {
+            cbbJob.setSelectedItem(cbbDepartment.getSelectedIndex());
         }
-        if (employeesTable.getValueAt(row, 5) == null) {
-            txtManagerId.setText(null);
-        }
-        txtHireDate.setText(employeesTable.getValueAt(row, 6).toString());
-        txtSalary.setText(employeesTable.getValueAt(row, 7).toString());
-        txtPhoneNumber.setText(employeesTable.getValueAt(row, 8).toString());
-        txtEmail.setText(employeesTable.getValueAt(row, 9).toString());
     }//GEN-LAST:event_employeesTableMouseClicked
 
     private void btnRefreshMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnRefreshMouseClicked
@@ -629,7 +589,7 @@ public final class EmployeesPanel extends javax.swing.JPanel {
                     }
                     data.add(vector);
                 }
-                ExcelHelper.export(columnNames, data, path + "\\report.xlsx");
+                ExcelHelper.export(columnNames, data, path+"\\report.xlsx");
             } catch (SQLException e) {
                 e.printStackTrace();
             } catch (IOException ex) {
@@ -643,9 +603,9 @@ public final class EmployeesPanel extends javax.swing.JPanel {
         int id = (int) employeesTable.getValueAt(row, 0);
         try {
             if (id == 0) {
-                JOptionPane.showMessageDialog(null, "Please choose employee you want to delete!", "Attention", INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Please choose employee you want to delete!", "Attention", 1);
             } else {
-                if (JOptionPane.showConfirmDialog(null, "Do you want to delete?", "Warning", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                if (JOptionPane.showConfirmDialog(null, "Do you want to delete?", "Attention", 2) == 0) {
                     Connector connector = new Connector();
                     Connection connection = connector.getConnection();
                     Statement statement;
@@ -661,94 +621,20 @@ public final class EmployeesPanel extends javax.swing.JPanel {
                 }
             }
         } catch (HeadlessException e) {
-            Logger.getLogger(e.getMessage());
+            e.printStackTrace();
         }
     }//GEN-LAST:event_btnDeleteMouseClicked
 
     private void btnEditMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnEditMouseClicked
         // TODO add your handling code here:
         int row = employeesTable.getSelectedRow();
-        int employeeId = (int) employeesTable.getValueAt(row, 0);
-        if (employeeId == 0) {
-            JOptionPane.showMessageDialog(null, "Please choose employee you want to edit!", "Attention", INFORMATION_MESSAGE);
-        } else if (employeeId != 0) {
-            int jobId = cbbJob.getSelectedIndex() + 1;
-            int departmentId = cbbDepartment.getSelectedIndex() + 1;
-            String lastName = txtLastName.getText();
-            String firstName = txtFirstName.getText();
-            String email = txtEmail.getText();
-            String managerId = txtManagerId.getText();
-            String hireDate = txtHireDate.getText();
-            double salary = Double.parseDouble(txtSalary.getText());
-            String phoneNumber = txtPhoneNumber.getText();
-            String regexEmail = "^[A-Za-z0-9+_.-]+@(.+)$";
-            String regexPhoneNumber = "^(0|\\+84)(\\s)?((3[2-9])|(5[689])|(7[06-9])|(8[1-689])|(9[0-46-9]))(\\d)(\\s)?(\\d{3})(\\s)?(\\d{3})$";
-            Pattern patternEmail = Pattern.compile(regexEmail);
-            Pattern patternPhoneNumber = Pattern.compile(regexPhoneNumber);
-            Matcher matcherEmail = patternEmail.matcher(email);
-            Matcher matcherPhoneNumber = patternPhoneNumber.matcher(phoneNumber);
-            Connector connector = new Connector();
-            Connection connection = connector.getConnection();
-            if (txtLastName.getText().length() == 0 || txtFirstName.getText().length() == 0 || txtEmail.getText().length() == 0
-                    || txtHireDate.getText().length() == 0 || txtSalary.getText().length() == 0 || txtPhoneNumber.getText().length() == 0) {
-                JOptionPane.showMessageDialog(null, "Employee information can't be blank!", "Warning", WARNING_MESSAGE);
-            } else {
-                try {
-                    String sql = "UPDATE [dbo].[Employees] SET [JobId] = ?, [ManagerId] = ?, [DepartmentId] = ?, [Email] = ?, "
-                            + "[FirstName] = ?, [LastName] = ?, [PhoneNumber] = ?, [Salary] = ?, [HireDate] = ? WHERE [Id] = '" + employeeId + "' ";
-                    PreparedStatement preparedStatement = connection.prepareStatement(sql);
-
-                    preparedStatement.setInt(1, jobId);
-                    if (managerId.length() == 0) {
-                        preparedStatement.setNull(2, java.sql.Types.INTEGER);
-                    } else {
-                        preparedStatement.setInt(2, Integer.parseInt(managerId));
-                    }
-                    preparedStatement.setInt(3, departmentId);
-                    if (matcherEmail.matches() == false) {
-                        JOptionPane.showMessageDialog(null, "Wrong email. Please enter the correct email!", "Warning", WARNING_MESSAGE);
-                    } else {
-                        preparedStatement.setString(4, email);
-                    }
-                    if (firstName.length() > 256) {
-                        JOptionPane.showMessageDialog(null, "Maximum charater is 256. Please enter the correct first name!", "Warning", WARNING_MESSAGE);
-                    } else {
-                        preparedStatement.setString(5, firstName);
-                    }
-                    if (lastName.length() > 256) {
-                        JOptionPane.showMessageDialog(null, "Maximum charater is 256. Please enter the correct last name!", "Warning", WARNING_MESSAGE);
-                    } else {
-                        preparedStatement.setString(6, lastName);
-                    }
-                    if (matcherPhoneNumber.matches() == false) {
-                        JOptionPane.showMessageDialog(null, "Wrong phone number. Please enter the correct phone number!", "Warning", WARNING_MESSAGE);
-                    } else {
-                        preparedStatement.setString(7, phoneNumber);
-                    }
-                    try {
-                        ResultSet resultSet = null;
-                        String sqlSalary = "SELECT MinSalary, MaxSalary FROM Jobs where [Jobs].[Id] = '" + jobId + "' ";
-                        PreparedStatement psSlary = connection.prepareStatement(sqlSalary);
-                        resultSet = psSlary.executeQuery();
-                        while (resultSet.next()) {
-                            double minSalary = resultSet.getDouble("MinSalary");
-                            double maxSalary = resultSet.getDouble("MaxSalary");
-                            if (salary <= maxSalary && minSalary <= salary) {
-                                preparedStatement.setDouble(8, salary);
-                            } else {
-                                JOptionPane.showMessageDialog(null, "Wrong salary. Please enter the correct salary between " + minSalary + "and " + maxSalary + "!", "Warning", WARNING_MESSAGE);
-                            }
-                        }
-                    } catch (SQLException e) {
-                        Logger.getLogger(e.getSQLState());
-                    }
-                    preparedStatement.setString(9, hireDate);
-                    preparedStatement.execute();
-                    setNull(true);
-                } catch (SQLException e) {
-                    Logger.getLogger(e.getSQLState());
-                }
-            }
+        int id = (int) employeesTable.getValueAt(row, 0);
+        if (id == 0) {
+            JOptionPane.showMessageDialog(null, "Please choose employee you want to edit!", "Attention", 1);
+        } else {
+            setLock(false);
+            btnOK.setEnabled(true);
+            btnCancel.setEnabled(true);
         }
     }//GEN-LAST:event_btnEditMouseClicked
 
@@ -779,9 +665,9 @@ public final class EmployeesPanel extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextField txtEmail;
-    private javax.swing.JTextField txtEmployeeId;
     private javax.swing.JTextField txtFirstName;
     private javax.swing.JTextField txtHireDate;
+    private javax.swing.JTextField txtId;
     private javax.swing.JTextField txtLastName;
     private javax.swing.JTextField txtManagerId;
     private javax.swing.JTextField txtPhoneNumber;
