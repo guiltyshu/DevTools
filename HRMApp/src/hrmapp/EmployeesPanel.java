@@ -146,7 +146,7 @@ public final class EmployeesPanel extends javax.swing.JPanel {
         txtEmail = new javax.swing.JTextField();
         txtManagerId = new javax.swing.JTextField();
         jLabel12 = new javax.swing.JLabel();
-        txtEmail1 = new javax.swing.JTextField();
+        txtId = new javax.swing.JTextField();
         jLabel9 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         btnInsert = new javax.swing.JButton();
@@ -208,9 +208,9 @@ public final class EmployeesPanel extends javax.swing.JPanel {
         txtManagerId.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
         jLabel12.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jLabel12.setText("Email");
+        jLabel12.setText("Id");
 
-        txtEmail1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        txtId.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -236,7 +236,7 @@ public final class EmployeesPanel extends javax.swing.JPanel {
                 .addGap(16, 16, 16)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(cbbDepartment, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(txtEmail1)
+                    .addComponent(txtId)
                     .addComponent(txtLastName, javax.swing.GroupLayout.DEFAULT_SIZE, 237, Short.MAX_VALUE)
                     .addComponent(txtFirstName, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 237, Short.MAX_VALUE)
                     .addComponent(cbbJob, javax.swing.GroupLayout.Alignment.TRAILING, 0, 237, Short.MAX_VALUE))
@@ -275,7 +275,7 @@ public final class EmployeesPanel extends javax.swing.JPanel {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel8)
                     .addComponent(txtManagerId, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtEmail1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtId, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel12))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -305,7 +305,7 @@ public final class EmployeesPanel extends javax.swing.JPanel {
                 .addContainerGap())
         );
 
-        jPanel2Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {cbbDepartment, cbbJob, txtEmail, txtEmail1, txtFirstName, txtHireDate, txtLastName, txtManagerId, txtPhoneNumber, txtSalary});
+        jPanel2Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {cbbDepartment, cbbJob, txtEmail, txtFirstName, txtHireDate, txtId, txtLastName, txtManagerId, txtPhoneNumber, txtSalary});
 
         jLabel9.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
         jLabel9.setForeground(new java.awt.Color(51, 153, 255));
@@ -665,9 +665,9 @@ public final class EmployeesPanel extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextField txtEmail;
-    private javax.swing.JTextField txtEmail1;
     private javax.swing.JTextField txtFirstName;
     private javax.swing.JTextField txtHireDate;
+    private javax.swing.JTextField txtId;
     private javax.swing.JTextField txtLastName;
     private javax.swing.JTextField txtManagerId;
     private javax.swing.JTextField txtPhoneNumber;
