@@ -19,9 +19,9 @@ public class App extends javax.swing.JFrame {
         EmployeesPanel employeesPanel = new EmployeesPanel();
         DepartmentsPanel departmentsPanel = new DepartmentsPanel();
         JobsPanel jobsPanel = new JobsPanel();
-        tabbedPane.addTab("Danh  sách nhân viên", employeesPanel);
-        tabbedPane.addTab("Danh  sách phòng ban", departmentsPanel);
-        tabbedPane.addTab("Danh  sách công việc", jobsPanel);
+        tabbedPane.addTab("Danh sách nhân viên", employeesPanel);
+        tabbedPane.addTab("Danh sách phòng ban", departmentsPanel);
+        tabbedPane.addTab("Danh sách công việc", jobsPanel);
     }
 
     /**

@@ -395,7 +395,7 @@
                           <Component id="btnOK" linkSize="3" min="-2" pref="25" max="-2" attributes="0"/>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Component id="btnCancel" linkSize="3" min="-2" pref="22" max="-2" attributes="0"/>
-                          <EmptySpace pref="59" max="32767" attributes="0"/>
+                          <EmptySpace type="unrelated" max="32767" attributes="0"/>
                           <Component id="btnExport" linkSize="3" min="-2" pref="22" max="-2" attributes="0"/>
                       </Group>
                   </Group>
