@@ -5,17 +5,103 @@
  */
 package hrmapp;
 
+import hrmapp.dao.Connector;
+import hrmapp.helper.ComboboxItem;
+import hrmapp.helper.JTableHelper;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author dangm
  */
 public class DepartmentsPanel extends javax.swing.JPanel {
 
-    /**
-     * Creates new form DepartmentsPanel
-     */
+    private boolean isInsertMode = false;
+
     public DepartmentsPanel() {
         initComponents();
+        fetchDepartmentsTable();
+        showLocations();
+        setBlank();
+        setLock(true);
+        setButtonState(true);
+    }
+
+    public void showLocations() {
+        try {
+            Connector connector = new Connector();
+            Connection connection = connector.getConnection();
+            String sql = "SELECT [Id], CONCAT([StreetAddress], ', ',[City], ', ', [StateProvince], ', ',[Country]) AS [Name]"
+                    + " FROM [dbo].[Locations]";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                cbbLocation.addItem(new ComboboxItem(resultSet.getString("Id"), resultSet.getString("Name")));
+            }
+            resultSet.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(JobsPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void fetchDepartmentsTable() {
+        try {
+            Connector connector = new Connector();
+            Connection connection = connector.getConnection();
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT [Departments].[Id], [Name], CONCAT([Locations].[StreetAddress], ', ',[Locations].[City], ', ', [Locations].[StateProvince], ', ',[Locations].[Country]) AS [Location]"
+                    + " FROM [dbo].[Departments]"
+                    + "JOIN [dbo].[Locations] ON [Departments].[LocationId] = [Locations].[Id]");
+            departmentsTable.setModel(JTableHelper.buildTableModel(resultSet, false));
+            connection.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(JobsPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void setLock(boolean a) {
+        txtName.setEnabled(!a);
+        cbbLocation.setEnabled(!a);
+    }
+
+    private void setBlank() {
+        txtId.setText("");
+        txtName.setText("");
+        cbbLocation.setSelectedIndex(0);
+    }
+
+    private void setButtonState(boolean isEnabledFunctional) {
+        btnInsert.setEnabled(isEnabledFunctional);
+        btnEdit.setEnabled(isEnabledFunctional);
+        btnDelete.setEnabled(isEnabledFunctional);
+        btnOK.setEnabled(!isEnabledFunctional);
+        btnCancel.setEnabled(!isEnabledFunctional);
+    }
+
+    private void setInputsById(int id) throws SQLException {
+        try {
+            Connector connector = new Connector();
+            Connection connection = connector.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM [dbo].[Departments] WHERE [Id] = ?");
+            preparedStatement.setInt(1, id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                txtId.setText(resultSet.getString("Id"));
+                txtName.setText(resultSet.getString("Name"));
+                cbbLocation.setSelectedItem(new ComboboxItem(resultSet.getString("LocationId"), null));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(EmployeesPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -29,16 +115,15 @@ public class DepartmentsPanel extends javax.swing.JPanel {
 
         jPanel2 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
-        txtIDDepart = new javax.swing.JTextField();
+        txtId = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
-        txtDepartName = new javax.swing.JTextField();
+        txtName = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        cbbLocation = new javax.swing.JComboBox<>();
         jLabel9 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        tblDepart = new javax.swing.JTable();
+        departmentsTable = new javax.swing.JTable();
         btnRefresh = new javax.swing.JButton();
         btnInsert = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
@@ -51,19 +136,19 @@ public class DepartmentsPanel extends javax.swing.JPanel {
         jLabel2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel2.setText("Location");
 
-        txtIDDepart.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        txtId.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        txtId.setEnabled(false);
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jLabel3.setText("Department Name");
+        jLabel3.setText("Name");
 
-        txtDepartName.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        txtName.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
         jLabel7.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jLabel7.setText("Department Id");
+        jLabel7.setText("Id");
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane1.setViewportView(jTextArea1);
+        cbbLocation.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        cbbLocation.setToolTipText("");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -71,15 +156,15 @@ public class DepartmentsPanel extends javax.swing.JPanel {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel7)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtDepartName)
-                    .addComponent(txtIDDepart)
-                    .addComponent(jScrollPane1))
+                    .addComponent(txtName)
+                    .addComponent(txtId)
+                    .addComponent(cbbLocation, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -87,16 +172,16 @@ public class DepartmentsPanel extends javax.swing.JPanel {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtIDDepart, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtId, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel7))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtDepartName, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel3))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(cbbLocation, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
@@ -106,7 +191,7 @@ public class DepartmentsPanel extends javax.swing.JPanel {
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
 
-        tblDepart.setModel(new javax.swing.table.DefaultTableModel(
+        departmentsTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -114,45 +199,60 @@ public class DepartmentsPanel extends javax.swing.JPanel {
 
             }
         ));
-        jScrollPane2.setViewportView(tblDepart);
+        departmentsTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                departmentsTableMouseClicked(evt);
+            }
+        });
+        jScrollPane2.setViewportView(departmentsTable);
 
         btnRefresh.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         btnRefresh.setText("Refresh");
-        btnRefresh.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                btnRefreshMouseClicked(evt);
+        btnRefresh.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRefreshActionPerformed(evt);
             }
         });
 
         btnInsert.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         btnInsert.setText("Insert");
-        btnInsert.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                btnInsertMouseClicked(evt);
+        btnInsert.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnInsertActionPerformed(evt);
             }
         });
 
         btnDelete.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         btnDelete.setText("Delete");
+        btnDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteActionPerformed(evt);
+            }
+        });
 
         btnEdit.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         btnEdit.setText("Edit");
+        btnEdit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditActionPerformed(evt);
+            }
+        });
 
         btnOK.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         btnOK.setText("OK");
         btnOK.setEnabled(false);
-        btnOK.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                btnOKMouseClicked(evt);
+        btnOK.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnOKActionPerformed(evt);
             }
         });
 
         btnCancel.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         btnCancel.setText("Cancel");
         btnCancel.setEnabled(false);
-        btnCancel.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                btnCancelMouseClicked(evt);
+        btnCancel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancelActionPerformed(evt);
             }
         });
 
@@ -196,7 +296,7 @@ public class DepartmentsPanel extends javax.swing.JPanel {
                         .addComponent(btnOK, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(btnCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 37, Short.MAX_VALUE))))
+                        .addGap(0, 44, Short.MAX_VALUE))))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -210,8 +310,8 @@ public class DepartmentsPanel extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addGap(24, 24, 24)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(24, 24, 24))
         );
         layout.setVerticalGroup(
@@ -227,23 +327,99 @@ public class DepartmentsPanel extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnRefreshMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnRefreshMouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnRefreshMouseClicked
+    private void btnRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRefreshActionPerformed
+        fetchDepartmentsTable();
+        showLocations();
+    }//GEN-LAST:event_btnRefreshActionPerformed
 
-    private void btnInsertMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnInsertMouseClicked
-        // TODO add your handling code here:
+    private void btnInsertActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInsertActionPerformed
+        isInsertMode = true;
+        setButtonState(false);
+        setLock(false);
+        setBlank();
+    }//GEN-LAST:event_btnInsertActionPerformed
 
-    }//GEN-LAST:event_btnInsertMouseClicked
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+        try {
+            int row = departmentsTable.getSelectedRow();
+            int id = Integer.parseInt(departmentsTable.getValueAt(row, 0).toString());
 
-    private void btnOKMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnOKMouseClicked
-   
-    }//GEN-LAST:event_btnOKMouseClicked
+            if (JOptionPane.showConfirmDialog(this, "are u sure to delete: " + id, "attention", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                Connector connector = new Connector();
+                Connection connection = connector.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM [dbo].[Departments] WHERE [Id] = ?");
+                preparedStatement.setInt(1, id);
+                preparedStatement.execute();
+                fetchDepartmentsTable();
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(EmployeesPanel.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, "Please choose department you want to delete!");
+        }
+    }//GEN-LAST:event_btnDeleteActionPerformed
 
-    private void btnCancelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCancelMouseClicked
-        // TODO add your handling code here:
-        
-    }//GEN-LAST:event_btnCancelMouseClicked
+    private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
+        try {
+            int row = departmentsTable.getSelectedRow();
+            int id = Integer.parseInt(departmentsTable.getValueAt(row, 0).toString());
+            isInsertMode = false;
+            setInputsById(id);
+            setButtonState(false);
+            setLock(false);
+        } catch (SQLException ex) {
+            Logger.getLogger(DepartmentsPanel.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, "Please choose department you want to edit!");
+        }
+    }//GEN-LAST:event_btnEditActionPerformed
+
+    private void btnOKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOKActionPerformed
+
+        String name = txtName.getText();
+        int locationId = Integer.parseInt(cbbLocation.getItemAt(cbbLocation.getSelectedIndex()).getValue());
+
+        Connector connector = new Connector();
+        Connection connection = connector.getConnection();
+        try {
+            String sql = "";
+            if (isInsertMode) {
+                sql = "INSERT INTO [dbo].[Departments] ([LocationId], [Name]) VALUES (?, ?)";
+            } else {
+                sql = "UPDATE [dbo].[Departments] SET [LocationId] = ?, [Name] = ? WHERE [Id] = ?";
+            }
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, locationId);
+            preparedStatement.setString(2, name);
+            if (!isInsertMode) {
+                preparedStatement.setInt(3, Integer.parseInt(txtId.getText()));
+            }
+            preparedStatement.execute();
+            fetchDepartmentsTable();
+            setLock(true);
+            setButtonState(true);
+        } catch (SQLException ex) {
+            Logger.getLogger(EmployeesPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_btnOKActionPerformed
+
+    private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
+        setLock(true);
+        setButtonState(true);
+        setBlank();
+    }//GEN-LAST:event_btnCancelActionPerformed
+
+    private void departmentsTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_departmentsTableMouseClicked
+        try {
+            int row = departmentsTable.getSelectedRow();
+            int id = Integer.parseInt(departmentsTable.getValueAt(row, 0).toString());
+            setInputsById(id);
+        } catch (SQLException ex) {
+            Logger.getLogger(EmployeesPanel.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, "Please choose department!");
+        }
+     }//GEN-LAST:event_departmentsTableMouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -253,17 +429,16 @@ public class DepartmentsPanel extends javax.swing.JPanel {
     private javax.swing.JButton btnInsert;
     private javax.swing.JButton btnOK;
     private javax.swing.JButton btnRefresh;
+    private javax.swing.JComboBox<ComboboxItem> cbbLocation;
+    private javax.swing.JTable departmentsTable;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JTable tblDepart;
-    private javax.swing.JTextField txtDepartName;
-    private javax.swing.JTextField txtIDDepart;
+    private javax.swing.JTextField txtId;
+    private javax.swing.JTextField txtName;
     // End of variables declaration//GEN-END:variables
 }

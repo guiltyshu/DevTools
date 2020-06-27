@@ -54,7 +54,7 @@ public final class EmployeesPanel extends javax.swing.JPanel {
         try {
             Connector connector = new Connector();
             Connection connection = connector.getConnection();
-            String sql = "SELECT Id, Title FROM Jobs";
+            String sql = "SELECT [Id], [Title] FROM [Jobs]";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
@@ -70,7 +70,7 @@ public final class EmployeesPanel extends javax.swing.JPanel {
         try {
             Connector connector = new Connector();
             Connection connection = connector.getConnection();
-            String sql = "SELECT Id, Name FROM Departments";
+            String sql = "SELECT [Id], [Name] FROM [Departments]";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
@@ -554,20 +554,23 @@ public final class EmployeesPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_btnInsertActionPerformed
 
     private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
-        int row = employeesTable.getSelectedRow();
         try {
+            int row = employeesTable.getSelectedRow();
             int id = Integer.parseInt(employeesTable.getValueAt(row, 0).toString());
             isInsertMode = false;
+            setInputsById(id);
             setButtonState(false);
             setLock(false);
-        } catch (NumberFormatException ex) {
+        } catch (SQLException ex) {
+            Logger.getLogger(EmployeesPanel.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, "Please choose employee you want to edit!");
         }
     }//GEN-LAST:event_btnEditActionPerformed
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
-        int row = employeesTable.getSelectedRow();
         try {
+            int row = employeesTable.getSelectedRow();
             int id = Integer.parseInt(employeesTable.getValueAt(row, 0).toString());
 
             if (JOptionPane.showConfirmDialog(this, "are u sure to delete: " + id, "attention", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
@@ -578,27 +581,29 @@ public final class EmployeesPanel extends javax.swing.JPanel {
                 preparedStatement.execute();
                 fetchEmployeesTable();
             }
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(null, "Please choose employee you want to delete!");
         } catch (SQLException ex) {
             Logger.getLogger(EmployeesPanel.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, "Please choose d you want to edit!");
         }
     }//GEN-LAST:event_btnDeleteActionPerformed
 
     private void employeesTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_employeesTableMouseClicked
-        int row = employeesTable.getSelectedRow();
         try {
+            int row = employeesTable.getSelectedRow();
             int id = Integer.parseInt(employeesTable.getValueAt(row, 0).toString());
             setInputsById(id);
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(null, "Please choose employee!");
         } catch (SQLException ex) {
             Logger.getLogger(EmployeesPanel.class.getName()).log(Level.SEVERE, null, ex);
-        } 
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, "Please choose employee!");
+        }
     }//GEN-LAST:event_employeesTableMouseClicked
 
     private void btnRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRefreshActionPerformed
         fetchEmployeesTable();
+        showDepartments();
+        showJobs();
     }//GEN-LAST:event_btnRefreshActionPerformed
 
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
