@@ -55,7 +55,7 @@ public class JobsPanel extends javax.swing.JPanel {
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(51, 153, 255));
-        jLabel1.setText("Danh sách công việc");
+        jLabel1.setText("Job List");
 
         jobsTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {

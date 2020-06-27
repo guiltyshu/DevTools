@@ -187,7 +187,7 @@ public class DepartmentsPanel extends javax.swing.JPanel {
 
         jLabel9.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
         jLabel9.setForeground(new java.awt.Color(51, 153, 255));
-        jLabel9.setText("Departments Panel");
+        jLabel9.setText("Department List");
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
 
