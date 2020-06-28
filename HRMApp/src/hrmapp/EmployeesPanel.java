@@ -671,7 +671,7 @@ public final class EmployeesPanel extends javax.swing.JPanel {
                         message += "Invalid Manager Id, manager id isn't exist.";
                     }
                 } catch (NumberFormatException ex) {
-                    message += "Invalid manager id. Manager id must be a number!";
+                    message += "Invalid manager id. Manager id must be a integer!";
                 }
                 if (!message.equals("")) {
                     JOptionPane.showMessageDialog(this, message);

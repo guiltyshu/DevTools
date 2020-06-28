@@ -357,7 +357,7 @@ public class DepartmentsPanel extends javax.swing.JPanel {
         } catch (SQLException ex) {
             Logger.getLogger(EmployeesPanel.class.getName()).log(Level.SEVERE, null, ex);
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, "Please choose department you want to delete!");
+            JOptionPane.showMessageDialog(this, "Please choose department you want to delete!");
         }
     }//GEN-LAST:event_btnDeleteActionPerformed
 
@@ -372,7 +372,7 @@ public class DepartmentsPanel extends javax.swing.JPanel {
         } catch (SQLException ex) {
             Logger.getLogger(DepartmentsPanel.class.getName()).log(Level.SEVERE, null, ex);
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, "Please choose department you want to edit!");
+            JOptionPane.showMessageDialog(this, "Please choose department you want to edit!");
         }
     }//GEN-LAST:event_btnEditActionPerformed
 
@@ -380,6 +380,11 @@ public class DepartmentsPanel extends javax.swing.JPanel {
 
         String name = txtName.getText();
         int locationId = Integer.parseInt(cbbLocation.getItemAt(cbbLocation.getSelectedIndex()).getValue());
+
+        if (name.length() == 0 || name.length() > 256) {
+            JOptionPane.showMessageDialog(this, "Department name is required and name must be less than or equals 256 characters.");
+            return;
+        }
 
         Connector connector = new Connector();
         Connection connection = connector.getConnection();
@@ -419,7 +424,7 @@ public class DepartmentsPanel extends javax.swing.JPanel {
         } catch (SQLException ex) {
             Logger.getLogger(EmployeesPanel.class.getName()).log(Level.SEVERE, null, ex);
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, "Please choose department!");
+            JOptionPane.showMessageDialog(this, "Please choose department!");
         }
      }//GEN-LAST:event_departmentsTableMouseClicked
 
