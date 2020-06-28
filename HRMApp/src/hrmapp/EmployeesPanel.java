@@ -564,7 +564,7 @@ public final class EmployeesPanel extends javax.swing.JPanel {
         } catch (SQLException ex) {
             Logger.getLogger(EmployeesPanel.class.getName()).log(Level.SEVERE, null, ex);
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, "Please choose employee you want to edit!");
+            JOptionPane.showMessageDialog(this, "Please choose employee you want to edit!");
         }
     }//GEN-LAST:event_btnEditActionPerformed
 
@@ -584,7 +584,7 @@ public final class EmployeesPanel extends javax.swing.JPanel {
         } catch (SQLException ex) {
             Logger.getLogger(EmployeesPanel.class.getName()).log(Level.SEVERE, null, ex);
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, "Please choose d you want to edit!");
+            JOptionPane.showMessageDialog(this, "Please choose d you want to edit!");
         }
     }//GEN-LAST:event_btnDeleteActionPerformed
 
@@ -596,7 +596,7 @@ public final class EmployeesPanel extends javax.swing.JPanel {
         } catch (SQLException ex) {
             Logger.getLogger(EmployeesPanel.class.getName()).log(Level.SEVERE, null, ex);
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, "Please choose employee!");
+            JOptionPane.showMessageDialog(this, "Please choose employee!");
         }
     }//GEN-LAST:event_employeesTableMouseClicked
 
@@ -616,32 +616,69 @@ public final class EmployeesPanel extends javax.swing.JPanel {
         int jobId = Integer.parseInt(cbbJob.getItemAt(cbbJob.getSelectedIndex()).getValue());
         int departmentId = Integer.parseInt(cbbDepartment.getItemAt(cbbDepartment.getSelectedIndex()).getValue());
 
+        String message = "";
         String lastName = txtLastName.getText();
         String firtName = txtFirstName.getText();
-        String email = txtEmail.getText();
         String managerId = txtManagerId.getText();
         String hireDate = txtHireDate.getText();
-        double salary = Double.parseDouble(txtSalary.getText());
+        double salary = 0;
+
+        if (lastName.length() == 0 || lastName.length() > 256) {
+            message += "Last name is required! and length must be less than or equals 256 characters.\n";
+        }
+
+        if (firtName.length() == 0 || firtName.length() > 256) {
+            message += "First name is required! and length must be less than or equals 256 characters.\n";
+        }
+
+        try {
+            salary = Double.parseDouble(txtSalary.getText());
+            if (salary < 0) {
+                message += "Invalid salary. Salary must be greater than or equals 0!\n";
+            }
+        } catch (NumberFormatException ex) {
+            message += "Invalid salary. Please enter the correct salary!\n";
+        }
+
+        String email = txtEmail.getText();
         String phoneNumber = txtPhoneNumber.getText();
 
         //validate
-        String regexEmail = "^[A-Za-z0-9+_.-]+@(.+)$";
-        String regexPhoneNumber = "^\\d{10}$";
-        Pattern patternEmail = Pattern.compile(regexEmail);
-        Pattern patternPhoneNumber = Pattern.compile(regexPhoneNumber);
-        Matcher matcherEmail = patternEmail.matcher(email);
-        Matcher matcherPhoneNumber = patternPhoneNumber.matcher(phoneNumber);
-        if (!matcherEmail.matches()) {
-            JOptionPane.showMessageDialog(null, "Wrong email. Please enter the correct email!");
+        Pattern patternEmail = Pattern.compile("^[A-Za-z0-9+_.-]+@(.+)$");
+        if (!patternEmail.matcher(email).matches()) {
+            message += "Invalid email, Please enter the correct email!\n";
+        }
+        Pattern patternPhoneNumber = Pattern.compile("^\\d{10}$");
+        if (!patternPhoneNumber.matcher(phoneNumber).matches()) {
+            message += "Invalid phone number, Please enter the correct phone number with 10 numbers!\n";
+        }
+
+        if (!message.equals("")) {
+            JOptionPane.showMessageDialog(this, message);
             return;
         }
-        if (!matcherPhoneNumber.matches()) {
-            JOptionPane.showMessageDialog(null, "Wrong phone number. Please enter the correct phone number!");
-            return;
-        }
+
         Connector connector = new Connector();
         Connection connection = connector.getConnection();
         try {
+            if (!managerId.equals("")) {
+                int tempId = 0;
+                try {
+                    tempId = Integer.parseInt(managerId);
+                    PreparedStatement preparedStatement = connection.prepareStatement("SELECT [Id] FROM [Employees] WHERE [Id] = ?");
+                    preparedStatement.setString(1, managerId);
+                    if (!preparedStatement.executeQuery().next()) {
+                        message += "Invalid Manager Id, manager id isn't exist.";
+                    }
+                } catch (NumberFormatException ex) {
+                    message += "Invalid manager id. Manager id must be a number!";
+                }
+                if (!message.equals("")) {
+                    JOptionPane.showMessageDialog(this, message);
+                    return;
+                }
+            }
+
             String sql = "";
             if (isInsertMode) {
                 sql = "INSERT INTO [dbo].[Employees] ([JobId], [ManagerId], [DepartmentId], [Email], [FirstName], [LastName], [PhoneNumber], [Salary], [HireDate])"
